@@ -50,7 +50,7 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, isIPv6 bool
 		network.Cidr = cidr
 
 		if ea != nil && len(ea) > 0 {
-			network.eaSearch = EASearch(ea)
+			network.eaSearch = EASearch(ea.GetMap())
 		}
 
 		sf := map[string]string{

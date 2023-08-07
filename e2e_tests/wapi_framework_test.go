@@ -1702,7 +1702,8 @@ var _ = Describe("Go Client", func() {
 				var res []ibclient.Ipv4NetworkContainer
 				search := &ibclient.Ipv4NetworkContainer{}
 				search.SetReturnFields([]string{"comment", "network", "network_view", "network_container"})
-				err := connector.GetObject(search, "", nil, &res)
+				qp := ibclient.NewQueryParams(false, map[string]string{"network": "78.0.0.0/8"})
+				err := connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
 				Expect(*res[0].Comment).To(Equal("Add networkcontainer through WAPI"))
 				Expect(res[0].NetworkContainer).To(Equal("/"))

@@ -105,8 +105,10 @@ var _ = Describe("Objects", func() {
 				nw := &ibclient.Ipv4Network{
 					NetworkView: "e2e_test_view",
 					Network:     utils.StringPtr("192.168.1.0/24"),
-					Ea: ibclient.EA{
-						"Country": "Colombia",
+					Ea: ibclient.EAWrapper{
+						EA: ibclient.EA{
+							"Country": "Colombia",
+						},
 					},
 				}
 
@@ -120,10 +122,10 @@ var _ = Describe("Objects", func() {
 				Expect(res.Ref).To(Equal(ref))
 				Expect(res.NetworkView).To(Equal(nw.NetworkView))
 				Expect(res.Network).To(Equal(nw.Network))
-				Expect(res.Ea["Country"]).To(Equal("Colombia"))
+				Expect(res.Ea.EA["Country"]).To(Equal("Colombia"))
 
 				nw.NetworkView = ""
-				nw.Ea = ibclient.EA{}
+				nw.Ea = ibclient.EAWrapper{}
 				updRef, err := connector.UpdateObject(nw, ref)
 				Expect(err).To(BeNil())
 
@@ -131,7 +133,7 @@ var _ = Describe("Objects", func() {
 				err = connector.GetObject(nw, ref, nil, &res)
 				Expect(err).To(BeNil())
 				Expect(res.Ref).To(Equal(ref))
-				Expect(res.Ea["Country"]).To(BeNil())
+				Expect(res.Ea.EA["Country"]).To(BeNil())
 
 				_, err = connector.DeleteObject(updRef)
 				Expect(err).To(BeNil())

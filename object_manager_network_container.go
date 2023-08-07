@@ -22,7 +22,7 @@ func (objMgr *ObjectManager) GetNetworkContainer(netview string, cidr string, is
 	var res []NetworkContainer
 
 	nc := NewNetworkContainer(netview, cidr, isIPv6, "", nil)
-	nc.eaSearch = EASearch(eaSearch)
+	nc.eaSearch = EASearch(eaSearch.GetMap())
 	sf := map[string]string{
 		"network_view": netview,
 		"network":      cidr,

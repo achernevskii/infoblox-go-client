@@ -20,7 +20,23 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal("False")
 }
 
-type EA map[string]interface{}
+type EAValue struct {
+	Value             interface{}
+	inheritanceSource string
+}
+
+func (eav EAValue) GetInheritanceSource() string {
+	return eav.inheritanceSource
+}
+
+func (eav EAValue) IsInherited() bool {
+	if eav.inheritanceSource == "" {
+		return false
+	}
+	return true
+}
+
+type EA map[string]*EAValue
 
 func (ea EA) Count() int {
 	return len(ea)
@@ -50,6 +66,7 @@ func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 	*ea = make(EA)
 	for k, v := range m {
 		val := v["value"]
+
 		switch valType := reflect.TypeOf(val).String(); valType {
 		case "json.Number":
 			var i64 int64
@@ -72,10 +89,30 @@ func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 			val = fmt.Sprintf("%v", val)
 		}
 
-		(*ea)[k] = val
+		resEA := &EAValue{
+			Value: val,
+		}
+
+		if is, ok := v["inheritance_source"]; ok {
+			if isRef, ok := is.(map[string]interface{})["_ref"].(string); ok {
+				resEA.inheritanceSource = isRef
+			}
+		}
+
+		(*ea)[k] = resEA
+
 	}
 
 	return
+}
+
+func (ea EA) GetMap() map[string]interface{} {
+	res := make(map[string]interface{})
+	for k, v := range ea {
+		res[k] = v.Value
+	}
+
+	return res
 }
 
 type EASearch map[string]interface{}

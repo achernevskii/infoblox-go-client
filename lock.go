@@ -162,7 +162,7 @@ func (l *NetworkViewLock) getLock() bool {
 			return false
 		}
 
-		if t, ok := nw.Ea[l.LockTimeoutEA]; ok {
+		if t, ok := nw.Ea.GetMap()[l.LockTimeoutEA]; ok {
 			if int32(time.Now().Unix())-int32(t.(int)) > timeout {
 				logrus.Debugln("Lock is timed out. Forcefully acquiring it.")
 				//remove the lock forcefully and acquire it
@@ -193,8 +193,8 @@ func (l *NetworkViewLock) Lock() error {
 		return fmt.Errorf(msg)
 	}
 
-	if _, ok := nw.Ea[l.LockEA]; !ok {
-		nw.Ea[l.LockEA] = freeLockVal
+	if _, ok := nw.Ea.GetMap()[l.LockEA]; !ok {
+		nw.Ea[l.LockEA].Value = freeLockVal
 		_, err = l.ObjMgr.UpdateNetworkView(nw.Ref, "", "", nw.Ea)
 		if err != nil {
 			return fmt.Errorf("Failed to Update Network view with Lock EA")
